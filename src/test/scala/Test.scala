@@ -33,7 +33,7 @@ object Test {
 
   @opaque type OpaqueListWithVariance[+A] = List[A]
 
-  @opaque type OpaqueFunctionWithVariance[-A, +B] = Function1[A, B]
+  @opaque type OpaqueFunctionWithVariance[-A, +B] = A => B
 
   type HK[G[_], A] = G[A]
   

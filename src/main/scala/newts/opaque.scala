@@ -9,43 +9,31 @@ object NewTypeMacros {
   val implTraitName: Type.Name = Type.Name("Impl")
   val implValueName: Term.Name = Term.Name("Impl")
 
+  def typeNameOrApply(qual: Type, args: Seq[Type.Name]): Type =
+    if (args.nonEmpty) Type.Apply(qual, args) else qual
+
   def typeDef(params: Seq[Type.Param], lo: Option[Type], up: Option[Type]): Decl.Type =
     Decl.Type(Seq(), Type.Name("T"), params, Type.Bounds(lo, up))
 
-  def implMethodDefns(params: Seq[Type.Param], paramNames: Seq[Type.Name],
-                      invariantParams: Seq[Type.Param], wrapped: Type): Seq[Decl.Def] =
-    if (params.nonEmpty) Seq(
-      q"def apply[..$invariantParams](value: $wrapped): T[..$paramNames]",
-      q"def unwrap[..$invariantParams](value: T[..$paramNames]): $wrapped",
-      q"def subst[F$$1[_], ..$invariantParams](value: F$$1[$wrapped]): F$$1[T[..$paramNames]]")
-    else Seq(
-      q"def apply(value: $wrapped): T",
-      q"def unwrap(value: T): $wrapped",
-      q"def subst[F$$1[_]](value: F$$1[$wrapped]): F$$1[T]")
+  def implDefn(translucent: Boolean, params: Seq[Type.Param], paramNames: Seq[Type.Name],
+                invariantParams: Seq[Type.Param], wrapped: Type): (Defn.Trait, Defn.Val) = {
+    val T = typeNameOrApply(t"T", paramNames)
+    val F = t"F$$1"
+    val Fp = tparam"F$$1[_]"
 
-  def implTrait(isTranslucent: Boolean, params: Seq[Type.Param], paramNames: Seq[Type.Name],
-                invariantParams: Seq[Type.Param], wrapped: Type): Defn.Trait =
-    q"""trait $implTraitName {
-          ${typeDef(params, None, if (isTranslucent) Some(wrapped) else None)}
-          ..${implMethodDefns(params, paramNames, invariantParams, wrapped)}
-        }"""
-
-  def implValue(params: Seq[Type.Param], paramNames: Seq[Type.Name],
-                invariantParams: Seq[Type.Param], wrapped: Type): Defn.Val = {
-    if (params.nonEmpty)
+    (
+      q"""trait $implTraitName {
+            ${typeDef(params, None, if (translucent) Some(wrapped) else None)}
+            def apply[..$invariantParams](value: $wrapped): $T
+            def unwrap[..$invariantParams](value: $T): $wrapped
+            def subst[$Fp, ..$invariantParams](value: $F[$wrapped]): $F[$T]
+          }""",
       q"""val ${Pat.Var.Term(implValueName)}: $implTraitName = new ${Ctor.Ref.Name(implTraitName.value)} {
             type T[..$params] = $wrapped
-            def apply[..$invariantParams](value: $wrapped): T[..$paramNames] = value
-            def unwrap[..$invariantParams](value: T[..$paramNames]): $wrapped = value
-            def subst[F[_], ..$invariantParams](value: F[$wrapped]): F[T[..$paramNames]] = value
-          }"""
-    else
-      q"""val ${Pat.Var.Term(implValueName)}: $implTraitName = new ${Ctor.Ref.Name(implTraitName.value)} {
-            type T = $wrapped
-            def apply(value: $wrapped): T = value
-            def unwrap(value: T): $wrapped = value
-            def subst[F[_]](value: F[$wrapped]): F[T] = value
-          }"""
+            def apply[..$invariantParams](value: $wrapped): $T = value
+            def unwrap[..$invariantParams](value: $T): $wrapped = value
+            def subst[$Fp, ..$invariantParams](value: $F[$wrapped]): $F[$T] = value
+          }""")
   }
 
   def expandNewType(translucent: Boolean, mods: Seq[Mod], name: Type.Name, params: Seq[Type.Param], wrapped: Type, companion: Defn.Object): Term.Block = {
@@ -56,18 +44,13 @@ object NewTypeMacros {
 
     val invariantParams = params.map(_.copy(mods = Seq()))
 
-    val typeDef: Defn.Type =
-      if (params.nonEmpty)
-        q"""..$mods type $name[..$params] = ${companion.name}.$implValueName.T[..$paramNames]"""
-      else
-        q"""..$mods type $name = ${companion.name}.$implValueName.T"""
+    val typeDef: Defn.Type = q"""..$mods type $name[..$params] = ?"""
+      .copy(body = typeNameOrApply(t"${companion.name}.$implValueName.T", paramNames))
 
-    val templateStats: Seq[Stat] =
-      implTrait(translucent, params, paramNames, invariantParams, wrapped) +:
-        implValue(params, paramNames, invariantParams, wrapped) +:
-        companion.templ.stats.getOrElse(Nil)
-    val newCompanion = companion.copy(
-      templ = companion.templ.copy(stats = Some(templateStats)))
+    val (implTrait, implVal) = implDefn(translucent, params, paramNames, invariantParams, wrapped)
+
+    val templateStats: Seq[Stat] = implTrait +: implVal+: companion.templ.stats.getOrElse(Nil)
+    val newCompanion = companion.copy(templ = companion.templ.copy(stats = Some(templateStats)))
 
     Term.Block(Seq(typeDef, newCompanion))
   }
