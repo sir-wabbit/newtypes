@@ -17,7 +17,7 @@ object NewTypeMacros {
     if (params.nonEmpty) Seq(
       q"def apply[..$invariantParams](value: $wrapped): T[..$paramNames]",
       q"def unwrap[..$invariantParams](value: T[..$paramNames]): $wrapped",
-      q"def subst[F[_], ..$invariantParams](value: F[$wrapped]): F[T[..$paramNames]]")
+      q"def subst[F$$1[_], ..$invariantParams](value: F$$1[$wrapped]): F$$1[T[..$paramNames]]")
     else Seq(
       q"def apply(value: $wrapped): T",
       q"def unwrap(value: T): $wrapped",
