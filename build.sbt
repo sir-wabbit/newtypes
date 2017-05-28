@@ -1,9 +1,9 @@
 val commonSettings = List(
-  addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3"),
+  addCompilerPlugin(Versions.kindProjector),
   organization := "com.alexknvl",
   version      := "0.0.1",
   licenses     += ("MIT", url("http://opensource.org/licenses/MIT")),
-  scalaVersion := "2.12.1",
+  scalaVersion := "2.12.2",
   scalacOptions ++= List(
     "-deprecation", "-unchecked", "-feature",
     "-encoding", "UTF-8",
@@ -19,6 +19,7 @@ lazy val root = (project in file("."))
   .settings(name := "newts")
   .settings(commonSettings: _*)
   .settings(
-    addCompilerPlugin(Libraries.paradise),
-    libraryDependencies ++= Libraries.scalameta,
+    resolvers += Resolver.mavenLocal,
+    addCompilerPlugin(Versions.paradise),
+    libraryDependencies ++= Versions.scalameta,
     scalacOptions += "-Xplugin-require:macroparadise")
