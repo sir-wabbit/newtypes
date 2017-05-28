@@ -2,6 +2,7 @@
 
 ## Quick Start
 ```scala
+addCompilerPlugin("org.scalameta" % "paradise" % "3.0.0-M8" cross CrossVersion.full)
 resolvers += Resolver.bintrayRepo("alexknvl", "maven")
 libraryDependencies += "com.alexknvl"  %%  "newts" % "0.0.1"
 ```
