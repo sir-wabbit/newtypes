@@ -46,7 +46,7 @@ object NewTypeMacros {
           }"""
   }
 
-  def expandNewType(translucent: Boolean, mods: Seq[Mod], name: Type.Name, params: Seq[Type.Param], wrapped: Type, companion: Defn.Object) = {
+  def expandNewType(translucent: Boolean, mods: Seq[Mod], name: Type.Name, params: Seq[Type.Param], wrapped: Type, companion: Defn.Object): Term.Block = {
     val paramNames: Seq[Type.Name] = params.map {
       case tparam"..$mods ${name: Type.Name}[..$tparams] >: $tpeopt1 <: $tpeopt2 <% ..$tpes1 : ..$tpes2" =>
         name
