@@ -30,4 +30,12 @@ object Test {
     val a = 1
   }
   val b: Int = OpaqueIntWithCompanion.a
+
+  @opaque type OpaqueListWithVariance[+A] = List[A]
+
+  @opaque type OpaqueFunctionWithVariance[-A, +B] = Function1[A, B]
+
+  type HK[G[_], A] = G[A]
+  
+  @opaque type OpaqueHK[G[_], A] = HK[G, A]
 }
