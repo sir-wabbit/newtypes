@@ -13,7 +13,10 @@ libraryDependencies += "com.alexknvl"  %%  "newtypes" % "0.0.3"
 
 Use [this fork](https://github.com/alexknvl/paradise/commit/29ac9f6a5aa7e7b0d7784cb028a7bb0456ae2d97) 
 of scalameta/paradise until https://github.com/scalameta/paradise/pull/207 is merged in **if you need 
-companion object support**. Clone it and `publishM2` in sbt.
+companion object support**. Clone it and `publishM2` in sbt, then change the `paradise` plugin to:
+```scala
+addCompilerPlugin("org.scalameta" % "paradise" % "3.0.0-alex" cross CrossVersion.full)
+```
 
 ### Why `newts`?
 
