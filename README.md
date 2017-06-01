@@ -17,7 +17,7 @@ Use [this fork](https://github.com/alexknvl/paradise/commit/29ac9f6a5aa7e7b0d778
 |:---------|:--------:|:---------:|:--------------:|
 | `isInstanceOf` | Yes | No | No |
 | Generics box `AnyRef` subtypes | Yes | **No** | **No** |
-| Generics box primitives | Yes | Yes | **No** |
+| Generics box primitives | Yes | Yes | Yes |
 | Primitives box | No | Yes | **No** |
 | Up-cast works | No | No | Yes |
 | Down-cast works | No | No | No |
