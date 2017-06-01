@@ -56,7 +56,6 @@ object ArrayWrapper {
 }
 
 type Flags = Int
-type Flags = Flags.Impl.T
 object Flags {
   trait Impl {
     type Flags <: Int
