@@ -1,12 +1,11 @@
 package test
 
 import scala.language.higherKinds
-
-import newts.{opaque, translucent}
+import newtypes.{opaque, translucent}
+import org.scalatest.{FlatSpec, FunSpec}
 
 object Test {
   @opaque type OpaqueInt = Int
-
   @opaque type OpaqueArray[A] = Array[A]
 
   @opaque type OpaqueIntWithExtraTypeParam[A] = Int
@@ -36,6 +35,37 @@ object Test {
   @opaque type OpaqueFunctionWithVariance[-A, +B] = A => B
 
   type HK[G[_], A] = G[A]
-  
   @opaque type OpaqueHK[G[_], A] = HK[G, A]
+
+//  Test2.Id
+}
+
+object Test2 {
+  import scala.{ specialized => sp }
+
+  @opaque type IArray[@sp A] = Array[A]
+  object IArrayOps1 extends IArrayOps2 {
+    implicit def toIntOps(value: IArray[Int]): IArrayOps.IntOps =
+      new IArrayOps.IntOps(value)
+  }
+  trait IArrayOps2 {
+    implicit def toAnyOps[A](value: IArray[A]): IArrayOps.AnyOps[A] =
+      new IArrayOps.AnyOps[A](value)
+  }
+
+  object IArrayOps {
+    class AnyOps[A](val value: IArray[A]) extends AnyVal {
+      def apply(index: Int): A = IArray.Impl.unwrap(value)(index)
+    }
+    class IntOps(val value: IArray[Int]) extends AnyVal {
+      def apply(index: Int): Int = IArray.Impl.unwrap(value)(index)
+    }
+  }
+
+  import IArrayOps1._
+
+  def run: Int = {
+    val arr: IArray[Int] = IArray.Impl.apply(Array(1, 2, 3))
+    arr(0)
+  }
 }
