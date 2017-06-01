@@ -1,7 +1,7 @@
 val commonSettings = List(
   addCompilerPlugin(Versions.kindProjector),
   organization := "com.alexknvl",
-  version      := "0.0.1",
+  version      := "0.0.2",
   licenses     += ("MIT", url("http://opensource.org/licenses/MIT")),
   scalaVersion := "2.12.2",
   scalacOptions ++= List(
@@ -16,10 +16,10 @@ val commonSettings = List(
     Resolver.sonatypeRepo("snapshots")))
 
 lazy val root = (project in file("."))
-  .settings(name := "newts")
+  .settings(name := "newtypes")
   .settings(commonSettings: _*)
   .settings(
     resolvers += Resolver.mavenLocal,
     addCompilerPlugin(Versions.paradise),
-    libraryDependencies ++= Versions.scalameta,
+    libraryDependencies ++= Versions.scalameta ++ Versions.testing,
     scalacOptions += "-Xplugin-require:macroparadise")
