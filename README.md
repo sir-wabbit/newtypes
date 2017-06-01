@@ -4,7 +4,7 @@ Use [this fork](https://github.com/alexknvl/paradise/commit/29ac9f6a5aa7e7b0d778
 
 ## Quick Start
 ```scala
-addCompilerPlugin("org.scalameta" % "paradise" % "3.0.0-M8" cross CrossVersion.full)
+addCompilerPlugin("org.scalameta" % "paradise" % "3.0.0-alex" cross CrossVersion.full)
 resolvers += Resolver.bintrayRepo("alexknvl", "maven")
 libraryDependencies += "com.alexknvl"  %%  "newts" % "0.0.1"
 ```
