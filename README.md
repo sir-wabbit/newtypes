@@ -20,7 +20,7 @@ addCompilerPlugin("org.scalameta" % "paradise" % "3.0.0-alex" cross CrossVersion
 
 ### Why `newts`?
 
-| Features | `AnyVal` | `@opaque` | `@translucent` |
+| Features | `AnyVal` | `@newtypes.opaque` | `@newtypes.translucent` |
 |:---------|:--------:|:---------:|:--------------:|
 | `isInstanceOf` | Yes | No | No |
 | Generics box `AnyRef` subtypes | Yes | **No** | **No** |
