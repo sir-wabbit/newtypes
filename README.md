@@ -1,5 +1,7 @@
 # Newts
 
+Better newtypes for Scala.
+
 ## Quick Start
 ```scala
 addCompilerPlugin("org.scalameta" % "paradise" % "3.0.0-alex" cross CrossVersion.full)
@@ -14,15 +16,19 @@ Use [this fork](https://github.com/alexknvl/paradise/commit/29ac9f6a5aa7e7b0d778
 | Features | `AnyVal` | `@opaque` | `@translucent` |
 |:---------|:--------:|:---------:|:--------------:|
 | `isInstanceOf` | Yes | No | No |
-| Generics box | Yes | No | No |
-| Primitives box | Sometimes | Yes | No |
+| Generics box `AnyRef` subtypes | Yes | **No** | **No** |
+| Generics box primitives | Yes | Yes | **No** |
+| Primitives box | No | Yes | **No** |
 | Up-cast works | No | No | Yes |
 | Down-cast works | No | No | No |
 | Any methods | Yes | Yes | Yes |
 | Overrides | Yes | No | No |
 | Virtual dispatch | Yes | No | No |
-| Wrap `List` elements | O(N) | O(1) | O(1) |
-| Unwrap `List` elements | O(N) | O(1) | O(1) |
+| Typeclass-based dispatch | Yes | Yes | Yes |
+| Wrap `List` elements | O(N) | **O(1)** | **O(1)** |
+| Unwrap `List` elements | O(N) | **O(1)** | **O(1)** |
+| Supports HK parameters | Yes | Yes | Yes |
+| Supports existential parameters | Yes | Yes | Yes |
 
 ## License
 Code is provided under the MIT license available at https://opensource.org/licenses/MIT,
