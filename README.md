@@ -1,6 +1,8 @@
 # Newts
 
-Better newtypes for Scala.
+Better newtypes for Scala based on the following two articles:
+ * [The High Cost of AnyVal subclasses...](https://failex.blogspot.com/2017/04/the-high-cost-of-anyval-subclasses.html)
+ * [...and the glorious subst to come](https://failex.blogspot.com/2017/04/and-glorious-subst-to-come.html)
 
 ## Quick Start
 ```scala
