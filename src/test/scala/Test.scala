@@ -24,11 +24,11 @@ object Test {
 
   @translucent type TranslucentArrayWithBounds[A >: Int <: AnyVal] = Array[A]
 
-  @opaque type OpaqueIntWithCompanion = Int
-  object OpaqueIntWithCompanion {
-    val a = 1
-  }
-  val b: Int = OpaqueIntWithCompanion.a
+//  @opaque type OpaqueIntWithCompanion = Int
+//  object OpaqueIntWithCompanion {
+//    val a = 1
+//  }
+//  val b: Int = OpaqueIntWithCompanion.a
 
   @opaque type OpaqueListWithVariance[+A] = List[A]
 
