@@ -11,7 +11,8 @@ libraryDependencies += "com.alexknvl"  %%  "newts" % "0.0.1"
 
 Use [this fork](https://github.com/alexknvl/paradise/commit/29ac9f6a5aa7e7b0d7784cb028a7bb0456ae2d97) of scalameta/paradise until https://github.com/scalameta/paradise/pull/207 is merged in. Clone it and `publishM2` in sbt.
 
-## Why `newts`?
+### Why `newts`?
+
 --------------------------------------------------
 | Features | `AnyVal` | `@opaque` | `@translucent` |
 |:---------|:--------:|:---------:|:--------------:|
@@ -29,6 +30,49 @@ Use [this fork](https://github.com/alexknvl/paradise/commit/29ac9f6a5aa7e7b0d778
 | Unwrap `List` elements | O(N) | **O(1)** | **O(1)** |
 | Supports HK parameters | Yes | Yes | Yes |
 | Supports existential parameters | Yes | Yes | Yes |
+
+### What does it do?
+
+```scala
+@opaque type ArrayWrapper[A] = Array[A]
+
+@translucent type Flags = Int
+```
+becomes
+```scala
+type ArrayWrapper[A] = ArrayWrapper.Impl.T[A]
+object ArrayWrapper {
+  trait Impl {
+    type ArrayWrapper[A]
+    def apply[A](arr: Array[A]): ArrayWrapper[A]
+    def unwrap[A](arr: ArrayWrapper[A]): Array[A]
+    def subst[F[_], A](fa: F[Array[A]]): F[ArrayWrapper[A]]
+  }
+  val Impl: Impl = new Impl {
+    type ArrayWrapper[A] = Array[A]
+    def apply[A](arr: Array[A]): ArrayWrapper[A] = arr
+    def unwrap[A](arr: ArrayWrapper[A]): Array[A] = arr
+    def subst[F[_], A](fa: F[Array[A]]): F[ArrayWrapper[A]] = fa
+  }
+}
+
+type Flags = Int
+type Flags = Flags.Impl.T
+object Flags {
+  trait Impl {
+    type Flags <: Int
+    def apply(x: Int): Flags
+    def unwrap(x: Flags): Int
+    def subst[F[_]](fa: F[Int]): F[Flags]
+  }
+  val Impl: Impl = new Impl {
+    type Flags = Int
+    def apply(x: Int): Flags = x
+    def unwrap(x: Flags): Int = x
+    def subst[F[_]](fa: F[Int]): F[Flags] = fa
+  }
+}
+```
 
 ## License
 Code is provided under the MIT license available at https://opensource.org/licenses/MIT,
