@@ -6,14 +6,14 @@ Better newtypes for Scala based on the following two articles:
 
 ## Quick Start
 ```scala
-addCompilerPlugin("org.scalameta" % "paradise" % "3.0.0-alex" cross CrossVersion.full)
+addCompilerPlugin("org.scalameta" % "paradise" % "3.0.0-M8" cross CrossVersion.full)
 resolvers += Resolver.bintrayRepo("alexknvl", "maven")
-libraryDependencies += "com.alexknvl"  %%  "newtypes" % "0.0.2"
+libraryDependencies += "com.alexknvl"  %%  "newtypes" % "0.0.3"
 ```
 
-Use [this fork](https://github.com/alexknvl/paradise/commit/29ac9f6a5aa7e7b0d7784cb028a7bb0456ae2d97) of scalameta/paradise until https://github.com/scalameta/paradise/pull/207 is merged in *if you need companion object support*. Clone it and `publishM2` in sbt.
-
-**If you don't need companion objects for newtypes**, use `"org.scalameta" % "paradise" % "3.0.0-M8" cross CrossVersion.full`.
+Use [this fork](https://github.com/alexknvl/paradise/commit/29ac9f6a5aa7e7b0d7784cb028a7bb0456ae2d97) 
+of scalameta/paradise until https://github.com/scalameta/paradise/pull/207 is merged in *if you need 
+companion object support*. Clone it and `publishM2` in sbt.
 
 ### Why `newts`?
 
