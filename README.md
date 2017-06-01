@@ -25,8 +25,8 @@ Use [this fork](https://github.com/alexknvl/paradise/commit/29ac9f6a5aa7e7b0d778
 | Overrides | Yes | No | No |
 | Virtual dispatch | Yes | No | No |
 | Typeclass-based dispatch | Yes | Yes | Yes |
-| Wrap `List` elements | O(N) | **O(1)** | **O(1)** |
-| Unwrap `List` elements | O(N) | **O(1)** | **O(1)** |
+| Wrap `List` elements | O(N) | **O(1)** (using `subst`) | **O(1)** (using `subst`) |
+| Unwrap `List` elements | O(N) | **O(1)** (using `subst` and `Is`) | **O(1)** (automatic widening) |
 | Supports HK parameters | Yes | Yes | Yes |
 | Supports existential parameters | Yes | Yes | Yes |
 
