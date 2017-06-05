@@ -49,13 +49,13 @@ becomes
 type ArrayWrapper[A] = ArrayWrapper.Impl.T[A]
 object ArrayWrapper {
   trait Impl {
-    type ArrayWrapper[A]
+    type T[A]
     def apply[A](arr: Array[A]): ArrayWrapper[A]
     def unwrap[A](arr: ArrayWrapper[A]): Array[A]
     def subst[F[_], A](fa: F[Array[A]]): F[ArrayWrapper[A]]
   }
   val Impl: Impl = new Impl {
-    type ArrayWrapper[A] = Array[A]
+    type T[A] = Array[A]
     def apply[A](arr: Array[A]): ArrayWrapper[A] = arr
     def unwrap[A](arr: ArrayWrapper[A]): Array[A] = arr
     def subst[F[_], A](fa: F[Array[A]]): F[ArrayWrapper[A]] = fa
@@ -65,13 +65,13 @@ object ArrayWrapper {
 type Flags = Flags.Impl.T
 object Flags {
   trait Impl {
-    type Flags <: Int
+    type T <: Int
     def apply(x: Int): Flags
     def unwrap(x: Flags): Int
     def subst[F[_]](fa: F[Int]): F[Flags]
   }
   val Impl: Impl = new Impl {
-    type Flags = Int
+    type T = Int
     def apply(x: Int): Flags = x
     def unwrap(x: Flags): Int = x
     def subst[F[_]](fa: F[Int]): F[Flags] = fa
