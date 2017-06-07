@@ -50,15 +50,15 @@ type ArrayWrapper[A] = ArrayWrapper.Impl.T[A]
 object ArrayWrapper {
   trait Impl {
     type T[A]
-    def apply[A](arr: Array[A]): ArrayWrapper[A]
-    def unwrap[A](arr: ArrayWrapper[A]): Array[A]
-    def subst[F[_], A](fa: F[Array[A]]): F[ArrayWrapper[A]]
+    def apply[A](arr: Array[A]): T[A]
+    def unwrap[A](arr: T[A]): Array[A]
+    def subst[F[_], A](fa: F[Array[A]]): F[T[A]]
   }
   val Impl: Impl = new Impl {
     type T[A] = Array[A]
-    def apply[A](arr: Array[A]): ArrayWrapper[A] = arr
-    def unwrap[A](arr: ArrayWrapper[A]): Array[A] = arr
-    def subst[F[_], A](fa: F[Array[A]]): F[ArrayWrapper[A]] = fa
+    def apply[A](arr: Array[A]): T[A] = arr
+    def unwrap[A](arr: T[A]): Array[A] = arr
+    def subst[F[_], A](fa: F[Array[A]]): F[T[A]] = fa
   }
 }
 
@@ -66,15 +66,15 @@ type Flags = Flags.Impl.T
 object Flags {
   trait Impl {
     type T <: Int
-    def apply(x: Int): Flags
-    def unwrap(x: Flags): Int
-    def subst[F[_]](fa: F[Int]): F[Flags]
+    def apply(x: Int): T
+    def unwrap(x: T): Int
+    def subst[F[_]](fa: F[Int]): F[T]
   }
   val Impl: Impl = new Impl {
     type T = Int
-    def apply(x: Int): Flags = x
-    def unwrap(x: Flags): Int = x
-    def subst[F[_]](fa: F[Int]): F[Flags] = fa
+    def apply(x: Int): T = x
+    def unwrap(x: T): Int = x
+    def subst[F[_]](fa: F[Int]): F[T] = fa
   }
 }
 ```
