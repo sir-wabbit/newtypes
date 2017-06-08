@@ -6,9 +6,9 @@ Better newtypes for Scala based on the following two articles:
 
 ## Quick Start
 ```scala
-addCompilerPlugin("org.scalameta" % "paradise" % "3.0.0-M8" cross CrossVersion.full)
+addCompilerPlugin("org.scalameta" % "paradise" % "3.0.0-M9" cross CrossVersion.full)
 resolvers += Resolver.bintrayRepo("alexknvl", "maven")
-libraryDependencies += "com.alexknvl"  %%  "newtypes" % "0.0.3"
+libraryDependencies += "com.alexknvl"  %%  "newtypes" % "0.1.0"
 ```
 
 Use [this fork](https://github.com/alexknvl/paradise/commit/29ac9f6a5aa7e7b0d7784cb028a7bb0456ae2d97) 
