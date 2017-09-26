@@ -2,12 +2,18 @@ package test
 
 import scala.language.higherKinds
 import newtypes.{opaque, translucent}
-import org.scalatest.{FlatSpec, FunSpec}
+import org.scalatest.{FlatSpec, FunSpec, FunSuite, Matchers}
 
 class Foo[A]
 
-object Test {
+class Test extends FunSuite with Matchers {
   @opaque type OpaqueInt = Int
+
+  test("casting array of opaque types") {
+    val arr: Array[Int] = Array(1, 2, 3)
+    OpaqueInt.Impl.subst[Array](arr)(0)
+  }
+
   @opaque type OpaqueArray[A] = Array[A]
 
   @opaque type OpaqueIntWithExtraTypeParam[A] = Int
@@ -33,7 +39,7 @@ object Test {
   }
   val b: Int = OpaqueIntWithCompanion.a
 
-//  implicitly[Foo[OpaqueIntWithCompanion]]
+  implicitly[Foo[OpaqueIntWithCompanion]]
 
   @opaque type OpaqueListWithVariance[+A] = List[A]
 
@@ -45,29 +51,33 @@ object Test {
 //  Test2.Id
 }
 
-object Test2 {
+object ImmutableArray {
   import scala.{ specialized => sp }
 
+  trait IArray1 {
+    implicit def toAnyOps[A](value: IArray[A]): AnyOps[A] =
+      new AnyOps[A](value)
+  }
   @opaque type IArray[@sp A] = Array[A]
-  object IArrayOps1 extends IArrayOps2 {
-    implicit def toIntOps(value: IArray[Int]): IArrayOps.IntOps =
-      new IArrayOps.IntOps(value)
-  }
-  trait IArrayOps2 {
-    implicit def toAnyOps[A](value: IArray[A]): IArrayOps.AnyOps[A] =
-      new IArrayOps.AnyOps[A](value)
+  object IArray extends IArray1 {
+    implicit def toIntOps(value: Type[Int]): IntOps =
+      new IntOps(value)
   }
 
-  object IArrayOps {
-    class AnyOps[A](val value: IArray[A]) extends AnyVal {
-      def apply(index: Int): A = IArray.Impl.unwrap(value)(index)
-    }
-    class IntOps(val value: IArray[Int]) extends AnyVal {
-      def apply(index: Int): Int = IArray.Impl.unwrap(value)(index)
-    }
+  class AnyOps[A](val value: IArray[A]) extends AnyVal {
+    def apply(index: Int): A = IArray.Impl.unwrap(value)(index)
   }
+  class IntOps(val value: IArray[Int]) extends AnyVal {
+    def apply(index: Int): Int = IArray.Impl.unwrap(value)(index)
+  }
+}
 
-  import IArrayOps1._
+class Test2 extends FunSuite with Matchers {
+  import ImmutableArray._
+
+  test("immutable arrays") {
+    run should be (1)
+  }
 
   def run: Int = {
     val arr: IArray[Int] = IArray.Impl.apply(Array(1, 2, 3))

@@ -8,7 +8,7 @@ Better newtypes for Scala based on the following two articles:
 ```scala
 addCompilerPlugin("org.scalameta" % "paradise" % "3.0.0-M10" cross CrossVersion.full)
 resolvers += Resolver.bintrayRepo("alexknvl", "maven")
-libraryDependencies += "com.alexknvl"  %%  "newtypes" % "0.2.0"
+libraryDependencies += "com.alexknvl"  %%  "newtypes" % "0.3.0"
 ```
 
 Use [this fork](https://github.com/alexknvl/paradise/commit/29ac9f6a5aa7e7b0d7784cb028a7bb0456ae2d97) 
@@ -47,35 +47,27 @@ addCompilerPlugin("org.scalameta" % "paradise" % "3.0.0-alex" cross CrossVersion
 ```
 becomes
 ```scala
-type ArrayWrapper[A] = ArrayWrapper.Impl.T[A]
+type ArrayWrapper[A] = ArrayWrapper.Type[A]
 object ArrayWrapper {
-  trait Impl {
-    type T[A]
-    def apply[A](arr: Array[A]): T[A]
-    def unwrap[A](arr: T[A]): Array[A]
-    def subst[F[_], A](fa: F[Array[A]]): F[T[A]]
-  }
-  val Impl: Impl = new Impl {
-    type T[A] = Array[A]
-    def apply[A](arr: Array[A]): T[A] = arr
-    def unwrap[A](arr: T[A]): Array[A] = arr
-    def subst[F[_], A](fa: F[Array[A]]): F[T[A]] = fa
+  type Base$$1
+  trait Tag$$1 extends Any
+  type Type[A] = Array[A] with Base$$1 with Tag$$1
+  
+  object Impl {
+    def apply[A](value: Array[A]): Type[A] = value.asInstanceOf[Type[A]]
+    def unwrap[A](value: Type[A]): Array[A] = value.asInstanceOf[Array[A]]
+    def subst[F[_], A](value: F[Array[A]]): F[Type[A]] = value.asInstanceOf[F[Type[A]]]
   }
 }
 
-type Flags = Flags.Impl.T
+type Flags = Flags.Type
 object Flags {
-  trait Impl {
-    type T <: Int
-    def apply(x: Int): T
-    def unwrap(x: T): Int
-    def subst[F[_]](fa: F[Int]): F[T]
-  }
-  val Impl: Impl = new Impl {
-    type T = Int
-    def apply(x: Int): T = x
-    def unwrap(x: T): Int = x
-    def subst[F[_]](fa: F[Int]): F[T] = fa
+  trait Tag$$1 extends Any
+  type Type = Int with Tag$$1
+  object Impl {
+    def apply(value: Int): Type = value.asInstanceOf[Type]
+    def unwrap(value: Type): Int = value.asInstanceOf[Int]
+    def subst[F[_]](value: F[Int]): F[Type] = value.asInstanceOf[F[Type]]
   }
 }
 ```

@@ -2,7 +2,7 @@ val commonSettings = List(
   addCompilerPlugin(Versions.kindProjector),
   addCompilerPlugin(Versions.paradise),
   organization := "com.alexknvl",
-  version      := "0.2.0",
+  version      := "0.3.0",
   licenses     += ("MIT", url("http://opensource.org/licenses/MIT")),
   scalaVersion := "2.12.3",
   scalacOptions ++= List(

@@ -8,12 +8,15 @@ object NewTypeMacros {
     s"(╯°□°）╯︵ ┻━┻ Can't make a newtype out of:\n$defn"
   val implTraitName: Type.Name = Type.Name("Impl")
   val implValueName: Term.Name = Term.Name("Impl")
+  val baseName: Type.Name      = Type.Name("Base$$1")
+  val tagName: Type.Name       = Type.Name("Tag$$1")
+  val anyName: Type.Name       = Type.Name("scala.Any")
 
   def typeNameOrApply(qual: Type, args: Seq[Type.Name]): Type =
     if (args.nonEmpty) Type.Apply(qual, args) else qual
 
   def typeDef(params: Seq[Type.Param], lo: Option[Type], up: Option[Type]): Decl.Type =
-    Decl.Type(Seq(), Type.Name("T"), params, Type.Bounds(lo, up))
+    Decl.Type(Seq(), Type.Name("Type"), params, Type.Bounds(lo, up))
 
   def stripSpecialized(params: Seq[Type.Param]): Seq[Type.Param] =
     params.map(p => p.copy(mods = p.mods.filter {
@@ -28,23 +31,19 @@ object NewTypeMacros {
       case _ => true
     }))
 
-  def implDefn(translucent: Boolean, params: Seq[Type.Param], paramNames: Seq[Type.Name], wrapped: Type): (Defn.Trait, Defn.Val) = {
-    val T = typeNameOrApply(t"T", paramNames)
+  def implDefn(translucent: Boolean, params: Seq[Type.Param], paramNames: Seq[Type.Name], wrapped: Type): Seq[Stat] = {
+    val T = typeNameOrApply(t"Type", paramNames)
     val F = t"F$$1"
     val Fp = tparam"F$$1[_]"
 
-    (
-      q"""trait $implTraitName {
-            ${typeDef(params, None, if (translucent) Some(wrapped) else None)}
-            def apply[..${stripVariance(params)}](value: $wrapped): $T
-            def unwrap[..${stripVariance(params)}](value: $T): $wrapped
-            def subst[$Fp, ..${stripSpecialized(stripVariance(params))}](value: $F[$wrapped]): $F[$T]
-          }""",
-      q"""val ${Pat.Var.Term(implValueName)}: $implTraitName = new ${Ctor.Ref.Name(implTraitName.value)} {
-            type T[..$params] = $wrapped
-            def apply[..${stripVariance(params)}](value: $wrapped): $T = value
-            def unwrap[..${stripVariance(params)}](value: $T): $wrapped = value
-            def subst[$Fp, ..${stripSpecialized(stripVariance(params))}](value: $F[$wrapped]): $F[$T] = value
+    List(
+      q"""type $baseName""",
+      q"""trait $tagName extends Any""",
+      q"""${typeDef(params, None, if (translucent) Some(Type.With(wrapped, tagName)) else Some(Type.With(baseName, tagName)))}""",
+      q"""object $implValueName {
+            def apply[..${stripVariance(params)}](value: $wrapped): $T = value.asInstanceOf[$T]
+            def unwrap[..${stripVariance(params)}](value: $T): $wrapped = value.asInstanceOf[$wrapped]
+            def subst[$Fp, ..${stripSpecialized(stripVariance(params))}](value: $F[$wrapped]): $F[$T] = value.asInstanceOf[$F[$T]]
           }""")
   }
 
@@ -52,11 +51,11 @@ object NewTypeMacros {
     val paramNames: Seq[Type.Name] = params.map(tp => Type.Name(tp.name.value))
 
     val typeDef: Defn.Type = q"""..$mods type $name[..$params] = ?"""
-      .copy(body = typeNameOrApply(t"${companion.name}.$implValueName.T", paramNames))
+      .copy(body = typeNameOrApply(t"${companion.name}.type#Type", paramNames))
 
-    val (implTrait, implVal) = implDefn(translucent, params, paramNames, wrapped)
+    val stats = implDefn(translucent, params, paramNames, wrapped)
 
-    val templateStats: Seq[Stat] = implTrait +: implVal+: companion.templ.stats.getOrElse(Nil)
+    val templateStats: Seq[Stat] = stats ++: companion.templ.stats.getOrElse(Nil)
     val newCompanion = companion.copy(templ = companion.templ.copy(stats = Some(templateStats)))
 
     Term.Block(Seq(typeDef, newCompanion))
