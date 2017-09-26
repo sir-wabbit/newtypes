@@ -51,7 +51,7 @@ type ArrayWrapper[A] = ArrayWrapper.Type[A]
 object ArrayWrapper {
   type Base$$1
   trait Tag$$1 extends Any
-  type Type[A] = Array[A] with Base$$1 with Tag$$1
+  type Type[A] <: Base$$1 with Tag$$1
   
   object Impl {
     def apply[A](value: Array[A]): Type[A] = value.asInstanceOf[Type[A]]
@@ -63,7 +63,7 @@ object ArrayWrapper {
 type Flags = Flags.Type
 object Flags {
   trait Tag$$1 extends Any
-  type Type = Int with Tag$$1
+  type Type <: Int with Tag$$1
   object Impl {
     def apply(value: Int): Type = value.asInstanceOf[Type]
     def unwrap(value: Type): Int = value.asInstanceOf[Int]
