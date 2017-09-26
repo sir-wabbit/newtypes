@@ -2,9 +2,9 @@ val commonSettings = List(
   addCompilerPlugin(Versions.kindProjector),
   addCompilerPlugin(Versions.paradise),
   organization := "com.alexknvl",
-  version      := "0.1.0",
+  version      := "0.2.0",
   licenses     += ("MIT", url("http://opensource.org/licenses/MIT")),
-  scalaVersion := "2.12.2",
+  scalaVersion := "2.12.3",
   scalacOptions ++= List(
     "-deprecation", "-unchecked", "-feature",
     "-encoding", "UTF-8",
@@ -28,7 +28,6 @@ lazy val commonJvmSettings = Seq(
 lazy val commonJsSettings = Seq(
   scalaJSStage in Global := FastOptStage,
   parallelExecution := false,
-  requiresDOM := false,
   jsEnv := new org.scalajs.jsenv.nodejs.NodeJSEnv(),
   // batch mode decreases the amount of memory needed to compile scala.js code
   scalaJSOptimizerOptions := scalaJSOptimizerOptions.value.withBatchMode(scala.sys.env.get("TRAVIS").isDefined))

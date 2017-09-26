@@ -4,6 +4,8 @@ import scala.language.higherKinds
 import newtypes.{opaque, translucent}
 import org.scalatest.{FlatSpec, FunSpec}
 
+class Foo[A]
+
 object Test {
   @opaque type OpaqueInt = Int
   @opaque type OpaqueArray[A] = Array[A]
@@ -24,11 +26,14 @@ object Test {
 
   @translucent type TranslucentArrayWithBounds[A >: Int <: AnyVal] = Array[A]
 
-//  @opaque type OpaqueIntWithCompanion = Int
-//  object OpaqueIntWithCompanion {
-//    val a = 1
-//  }
-//  val b: Int = OpaqueIntWithCompanion.a
+  @opaque type OpaqueIntWithCompanion = Int
+  object OpaqueIntWithCompanion {
+    val a = 1
+    implicit val foo: Foo[OpaqueIntWithCompanion] = new Foo[OpaqueIntWithCompanion]()
+  }
+  val b: Int = OpaqueIntWithCompanion.a
+
+//  implicitly[Foo[OpaqueIntWithCompanion]]
 
   @opaque type OpaqueListWithVariance[+A] = List[A]
 
